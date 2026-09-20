@@ -1,6 +1,6 @@
 # FFU Analyzer
 
-Live app: https://ffu-analyzer-test-production.up.railway.app/
+Deployed on Railway. The link is in the email.
 
 Ask questions about a Swedish tender package (*förfrågningsunderlag*) and get answers
 with a source and a page number, plus a warning when the text has been changed or
