@@ -1,5 +1,7 @@
 # FFU Analyzer
 
+Live app: https://ffu-analyzer-test-production.up.railway.app/
+
 Ask questions about a Swedish tender package (*förfrågningsunderlag*) and get answers
 with a source and a page number, plus a warning when the text has been changed or
 removed by a later revision.
@@ -111,11 +113,12 @@ app.
 
 Notes on the hosted version:
 
-- The tender documents are not in the repository, so the app starts empty. Upload the
-  zip once and it is indexed in a minute or two. Uploading a 30 MB package takes
-  longer over the network than it does locally.
-- The volume at `/data` holds both the documents and the index, so they survive
-  restarts and redeploys. Without it, every redeploy leaves the app empty.
+- The tender package is already uploaded and indexed, so the app is ready to use when
+  you open it. The documents and the index live on a mounted volume at `/data` and
+  survive restarts and redeploys, which I verified by redeploying after uploading.
+- The documents are not in the repository. To load a package yourself, use
+  **Ladda upp FFU (.zip)** and drop in the zip as downloaded from the procurement
+  system. Indexing 31 documents takes a minute or two.
 - The instance is shared. Anyone with the link can ask questions, every question
   spends API credit, and uploading a new package replaces the documents for everyone.
   That is fine for a review, but it would need per-user storage and authentication
