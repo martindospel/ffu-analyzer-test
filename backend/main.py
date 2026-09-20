@@ -199,6 +199,26 @@ TOOLS = [
 ]
 
 
+def register(sources: dict, doc_id: int, page: int, section: str, document: str,
+             text: str, superseded: bool) -> str:
+    """Give a page one stable citation id, however many searches return it."""
+    for key, existing in sources.items():
+        if existing["doc_id"] == doc_id and existing["page"] == page:
+            return key
+    key = f"S{len(sources) + 1}"
+    sources[key] = {
+        "id": key,
+        "doc_id": doc_id,
+        "document": document,
+        "page": page,
+        "section": section,
+        "snippet": text[:400],
+        "superseded": superseded,
+        "status": page_status(doc_id, page),
+    }
+    return key
+
+
 def run_tool(name: str, args: dict, sources: dict) -> str:
     """Execute a tool call and register every hit as a citable source."""
     if name == "search_ffu":
@@ -207,17 +227,8 @@ def run_tool(name: str, args: dict, sources: dict) -> str:
             return "Inga träffar. Pröva andra sökord."
         blocks = []
         for hit in hits:
-            key = f"S{len(sources) + 1}"
-            sources[key] = {
-                "id": key,
-                "doc_id": hit["doc_id"],
-                "document": hit["display_name"],
-                "page": hit["page"],
-                "section": hit["section"],
-                "snippet": hit["text"][:400],
-                "superseded": bool(hit["superseded_by"]),
-                "status": page_status(hit["doc_id"], hit["page"]),
-            }
+            key = register(sources, hit["doc_id"], hit["page"], hit["section"],
+                           hit["display_name"], hit["text"], bool(hit["superseded_by"]))
             flags = []
             if hit["superseded_by"]:
                 flags.append("ERSATT VERSION")
@@ -238,17 +249,8 @@ def run_tool(name: str, args: dict, sources: dict) -> str:
         ).fetchone()
         if not row:
             return "Sidan finns inte."
-        key = f"S{len(sources) + 1}"
-        sources[key] = {
-            "id": key,
-            "doc_id": args["doc_id"],
-            "document": row["display_name"],
-            "page": args["page"],
-            "section": "",
-            "snippet": row["text"][:400],
-            "superseded": bool(row["superseded_by"]),
-            "status": page_status(args["doc_id"], args["page"]),
-        }
+        key = register(sources, args["doc_id"], args["page"], "", row["display_name"],
+                       row["text"], bool(row["superseded_by"]))
         return f"[{key}] {row['display_name']} — sida {args['page']}\n{row['text'][:6000]}"
 
     return "Okänt verktyg."
