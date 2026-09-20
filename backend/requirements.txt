@@ -1,5 +1,7 @@
 fastapi
 uvicorn
 openai
-pymupdf4llm
+pymupdf
+openpyxl
+python-multipart
 python-dotenv

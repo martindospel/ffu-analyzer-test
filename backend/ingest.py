@@ -296,6 +296,10 @@ def parse_kfu(pages: list[str]) -> list[dict]:
                 changes.append({"target": drawing.group(1), "kind": "ritning", "description": description})
             elif handling:
                 changes.append({"target": handling.group(1), "kind": "handling", "description": description})
+            elif changes and changes[-1]["kind"] == "handling" and len(description) < 120:
+                # The document name and the "ändringen avser" text wrap onto
+                # their own lines in the table, so keep them with the entry.
+                changes[-1]["description"] = f"{changes[-1]['description']} {description}".strip()
     return changes
 
 
